@@ -39,6 +39,11 @@ app.get('/projects', async (req, res) => {
     const title = 'Service Projects';
     res.render('projects', { title });
 });
+app.get('/categories', async (req, res) => {
+    const title = 'Project Categories';
+    res.render('categories', {title }); // Note: no .ejs, no path. Express knows from app.set('views')
+});
+
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src/views/home.html'));
@@ -50,6 +55,10 @@ app.get('/organizations', (req, res) => {
 
 app.get('/projects', (req, res) => {
     res.sendFile(path.join(__dirname, 'src/views/projects.html'));
+});
+
+app.get('/categories', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src/views/categories.html'));
 });
 
 app.listen(PORT, () => {
