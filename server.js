@@ -41,7 +41,7 @@ app.get('/projects', async (req, res) => {
 });
 app.get('/categories', async (req, res) => {
     const title = 'Project Categories';
-    res.render('categories', {title }); // Note: no .ejs, no path. Express knows from app.set('views')
+    res.render('categories', { title }); // Note: no .ejs, no path. Express knows from app.set('views')
 });
 
 
