@@ -2,10 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
-// Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
-
-// Define the port number the server will listen on
 const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,52 +10,35 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-
-// Serve static files from the public directory
+// 1. Static files first - CSS, JS, images
 app.use(express.static(path.join(__dirname, 'public')));
 
-/// Set EJS as the templating engine
+// 2. Set up EJS
 app.set('view engine', 'ejs');
-
-// Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
+
 /**
-  * Routes
-  */
+ * Routes - Only use res.render(), no duplicates
+ */
 app.get('/', async (req, res) => {
-    const title = 'Home';
-    res.render('home', { title });
+    res.render('home', { title: 'Home' });
 });
 
 app.get('/organizations', async (req, res) => {
-    const title = 'Our Partner Organizations';
-    res.render('organizations', { title });
+    res.render('organizations', { title: 'Our Partner Organizations' });
 });
 
 app.get('/projects', async (req, res) => {
-    const title = 'Service Projects';
-    res.render('projects', { title });
+    res.render('projects', { title: 'Service Projects' });
 });
+
 app.get('/categories', async (req, res) => {
-    const title = 'Project Categories';
-    res.render('categories', { title }); // Note: no .ejs, no path. Express knows from app.set('views')
+    res.render('categories', { title: 'Project Categories' }); 
 });
 
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src/views/home.html'));
-});
-
-app.get('/organizations', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src/views/organizations.html'));
-});
-
-app.get('/projects', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src/views/projects.html'));
-});
-
-app.get('/categories', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src/views/categories.html'));
+// 3. 404 handler - optional but good practice
+app.use((req, res) => {
+    res.status(404).render('404', { title: 'Page Not Found' });
 });
 
 app.listen(PORT, () => {
