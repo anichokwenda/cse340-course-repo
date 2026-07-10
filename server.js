@@ -1,6 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { testConnection } from './src/models/db.js'; // DB test
+import { getAllOrganizations } from './src/models/organizations.js'; // <-- ADDED MODEL
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
@@ -18,14 +21,25 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
 /**
- * Routes - Only use res.render(), no duplicates
+ * Routes - Now pulling from DB via Model
  */
 app.get('/', async (req, res) => {
     res.render('home', { title: 'Home' });
 });
 
-app.get('/organizations', async (req, res) => {
-    res.render('organizations', { title: 'Our Partner Organizations' });
+app.get('/organizations', async (req, res) => { 
+    try {
+        const organizations = await getAllOrganizations(); // <-- USE MODEL FUNCTION
+        console.log(organizations); // For debugging
+        
+        res.render('organizations', { 
+            title: 'Our Partner Organizations',
+            organizations: organizations // <-- send data to EJS
+        });
+    } catch (error) {
+        console.error('Error fetching organizations:', error);
+        res.status(500).send('Database error');
+    }
 });
 
 app.get('/projects', async (req, res) => {
@@ -36,12 +50,18 @@ app.get('/categories', async (req, res) => {
     res.render('categories', { title: 'Project Categories' }); 
 });
 
-// 3. 404 handler - optional but good practice
+// 3. 404 handler
 app.use((req, res) => {
     res.status(404).render('404', { title: 'Page Not Found' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://127.0.0.1:${PORT}`);
-  console.log(`Environment: ${NODE_ENV}`);
+// 4. Test DB connection before starting server
+app.listen(PORT, async () => {
+  try {
+    await testConnection(); // Tests DB on startup
+    console.log(`Server is running at http://127.0.0.1:${PORT}`);
+    console.log(`Environment: ${NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
 });
