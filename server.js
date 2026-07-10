@@ -3,7 +3,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js'; // DB test
-import { getAllOrganizations } from './src/models/organizations.js'; // <-- ADDED MODEL
+import { getAllOrganizations } from './src/models/organizations.js'; // <-- MODEL
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
@@ -30,12 +30,10 @@ app.get('/', async (req, res) => {
 app.get('/organizations', async (req, res) => { 
     try {
         const organizations = await getAllOrganizations(); // <-- USE MODEL FUNCTION
-        console.log(organizations); // For debugging
+        // console.log(organizations); // REMOVED - we don't need to print to terminal anymore
         
-        res.render('organizations', { 
-            title: 'Our Partner Organizations',
-            organizations: organizations // <-- send data to EJS
-        });
+        const title = 'Our Partner Organizations';
+        res.render('organizations', { title, organizations }); // <-- send data to EJS
     } catch (error) {
         console.error('Error fetching organizations:', error);
         res.status(500).send('Database error');
