@@ -4,7 +4,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js'; // <-- NEW
+import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js'; // <-- NEW
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
@@ -19,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 2. Set up EJS
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'src/views'));
+app.set('views', path.join(__dirname, 'src/views')); // <-- your views are in src/views
 
 // Routes
 app.get('/', async (req, res) => {
@@ -37,19 +38,27 @@ app.get('/organizations', async (req, res) => {
     }
 });
 
-app.get('/projects', async (req, res) => { // <-- UPDATED
+app.get('/projects', async (req, res) => {
     try {
         const projects = await getAllProjects(); 
         const title = 'Service Projects';
-        res.render('projects', { title, projects }); // <-- send projects to EJS
+        res.render('projects', { title, projects });
     } catch (error) {
         console.error('Error fetching projects:', error);
         res.status(500).send('Database error');
     }
 });
 
+// UPDATED: Categories Route with DB call
 app.get('/categories', async (req, res) => {
-    res.render('categories', { title: 'Project Categories' }); 
+    try {
+        const categories = await getAllCategories(); // <-- get from DB
+        const title = 'Project Categories';
+        res.render('categories', { title, categories }); // <-- pass to EJS
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).send('Database error');
+    }
 });
 
 // 404 handler

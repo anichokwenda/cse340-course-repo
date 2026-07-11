@@ -1,8 +1,11 @@
-import { pool } from './db.js'; // <-- import pool
+import { db } from './db.js' // <-- changed from pool to db
 
-// Get all service projects with their organization name
-export async function getAllProjects() {
-    const sql = `
+/**
+ * Get all service projects with their organization name
+ * @returns {Promise<Array>} Array of project objects
+ */
+const getAllProjects = async() => {
+    const query = `
         SELECT
             p.project_id,
             p.title,
@@ -15,6 +18,8 @@ export async function getAllProjects() {
         JOIN public.organizations o ON p.organization_id = o.organization_id
         ORDER BY p.project_date ASC;
     `;
-    const result = await pool.query(sql); // <-- use pool.query
+    const result = await db.query(query); // <-- use db.query
     return result.rows;
 }
+
+export { getAllProjects } // <-- changed to named export for consistency

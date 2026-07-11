@@ -1,12 +1,13 @@
 <%- include('partials/header') %>
+
 <main>
     <h1><%= title %></h1>
     <h2>Upcoming Service Projects</h2>
     <p>Browse all upcoming volunteer opportunities from our partner organizations.</p>
 
-    <% if (projects.length === 0) { %>
+    <% if (projects && projects.length === 0) { %>
         <p>No upcoming projects at this time. Check back soon!</p>
-    <% } else { %>
+    <% } else if (projects && projects.length > 0) { %>
         <ul style="list-style: none; padding: 0;">
             <% projects.forEach(project => { %>
                 <li style="margin-bottom: 25px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
@@ -22,9 +23,15 @@
                     <p style="margin: 5px 0; font-size: 0.9em; color: #555;">
                         <strong>Location:</strong> <%= project.location %>
                     </p>
+                    <p style="margin: 5px 0; font-size: 0.9em; color: #555;">
+                        <strong>Organization ID:</strong> <%= project.organization_id %>
+                    </p>
                 </li>
             <% }); %>
         </ul>
+    <% } else { %>
+        <p>Error loading projects.</p>
     <% } %>
 </main>
+
 <%- include('partials/footer') %>

@@ -3,17 +3,17 @@ const { Pool } = pg;
 
 /**
  * Connection pool for PostgreSQL database.
+ * Uses DB_URL from.env. SSL required for Render.
  */
 const pool = new Pool({
     connectionString: process.env.DB_URL,
     ssl: {
-        rejectUnauthorized: false // <- this is the fix for Render
+        rejectUnauthorized: false // required for Render/Postgres
     }
 });
 
 /**
- * Since we will modify the normal pool object in development mode, we need to create and
- * export a reference to the pool object.
+ * Wrapper for query logging in development
  */
 let db = null;
 
@@ -38,17 +38,16 @@ if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING ===
                 throw error;
             }
         },
-
         async close() {
             await pool.end();
         }
     };
 } else {
-    db = pool;
+    db = pool; // in production just use pool directly
 }
 
 /**
- * Tests the database connection by executing a simple query.
+ * Tests the database connection
  */
 const testConnection = async() => {
     try {
@@ -61,4 +60,4 @@ const testConnection = async() => {
     }
 };
 
-export { db, pool, testConnection }; // <-- KEY FIX: export all 3
+export { db, pool, testConnection };

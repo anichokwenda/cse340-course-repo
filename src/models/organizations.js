@@ -1,5 +1,9 @@
-import { db } from './db.js' // <-- changed from default import
+import { db } from './db.js'
 
+/**
+ * Get all organizations from the database
+ * @returns {Promise<Array>} Array of organization objects
+ */
 const getAllOrganizations = async() => {
     const query = `
         SELECT organization_id, name, description, contact_email, logo_filename
@@ -7,7 +11,7 @@ const getAllOrganizations = async() => {
         ORDER BY name;
     `;
 
-    const result = await db.query(query); // <-- this stays the same
+    const result = await db.query(query);
     return result.rows;
 }
 
