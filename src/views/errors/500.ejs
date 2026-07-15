@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<main class="container" style="text-align: center; padding: 4rem 1rem;">
+  <h1 style="font-size: 4rem; margin-bottom: 1rem;">500</h1>
+  <h2><%= title %></h2>
+  <p>Something went wrong on our end. Please try again later.</p>
+
+  <% if (NODE_ENV === 'development' && stack) { %>
+    <details style="margin-top: 2rem; text-align: left;">
+      <summary>Debug Info</summary>
+      <pre><%= stack %></pre>
+    </details>
+  <% } %>
+
+  <a href="/">Return to Home</a>
+</main>
+<%- include('../partials/footer') %>
