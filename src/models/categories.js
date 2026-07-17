@@ -43,6 +43,7 @@ const getCategoriesByProjectId = async (projectId) => {
 
 /**
  * Retrieve all service projects for a given category.
+ * Shows ALL projects, not just upcoming
  */
 const getProjectsByCategoryId = async (categoryId) => {
   const query = `
@@ -53,8 +54,7 @@ const getProjectsByCategoryId = async (categoryId) => {
     JOIN public.organizations o ON sp.organization_id = o.organization_id
     JOIN public.project_categories pc ON sp.project_id = pc.project_id
     WHERE pc.category_id = $1
-      AND sp.project_date >= CURRENT_DATE
-    ORDER BY sp.project_date ASC;
+    ORDER BY sp.project_date DESC; -- newest first. Use ASC for oldest first
   `;
   const result = await db.query(query, [categoryId]);
   return result.rows;
