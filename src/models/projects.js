@@ -1,5 +1,8 @@
 import { db } from './db.js'
 
+/**
+ * Get all projects - kept for reference
+ */
 const getAllProjects = async () => {
   const query = `
     SELECT
@@ -16,6 +19,9 @@ const getAllProjects = async () => {
   return result.rows;
 };
 
+/**
+ * Get projects for one organization
+ */
 const getProjectsByOrganizationId = async (organizationId) => {
   const query = `
     SELECT
@@ -33,4 +39,50 @@ const getProjectsByOrganizationId = async (organizationId) => {
   return result.rows;
 };
 
-export { getAllProjects, getProjectsByOrganizationId };
+/**
+ * Get the next X upcoming projects with organization name
+ * @param {number} number_of_projects
+ */
+const getUpcomingProjects = async (number_of_projects) => {
+  const query = `
+    SELECT
+      sp.project_id,
+      sp.title,
+      sp.description,
+      sp.project_date,
+      sp.location,
+      sp.organization_id,
+      o.name AS organization_name
+    FROM public.service_projects sp
+    JOIN public.organizations o ON sp.organization_id = o.organization_id
+    WHERE sp.project_date >= CURRENT_DATE
+    ORDER BY sp.project_date ASC
+    LIMIT $1;
+  `;
+  const result = await db.query(query, [number_of_projects]);
+  return result.rows;
+};
+
+/**
+ * Get details for one project by ID with organization name
+ * @param {number} id
+ */
+const getProjectDetails = async (id) => {
+  const query = `
+    SELECT
+      sp.project_id,
+      sp.title,
+      sp.description,
+      sp.project_date,
+      sp.location,
+      sp.organization_id,
+      o.name AS organization_name
+    FROM public.service_projects sp
+    JOIN public.organizations o ON sp.organization_id = o.organization_id
+    WHERE sp.project_id = $1;
+  `;
+  const result = await db.query(query, [id]);
+  return result.rows[0];
+};
+
+export { getAllProjects, getProjectsByOrganizationId, getUpcomingProjects, getProjectDetails };

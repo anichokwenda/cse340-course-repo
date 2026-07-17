@@ -5,15 +5,18 @@
 
   <% if (projects && projects.length > 0) { %>
     <% projects.forEach(project => { %>
-      <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem;">
-        <h2><%= project.title %></h2>
+      <div style="border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 8px;">
+        <h2><a href="/project/<%= project.project_id %>"><%= project.title %></a></h2>
         <p><%= project.description %></p>
-        <p><strong>Location:</strong> <%= project.location %></p>
         <p><strong>Date:</strong> <%= new Date(project.project_date).toLocaleDateString() %></p>
+        <p><strong>Location:</strong> <%= project.location %></p>
+        <p><strong>Organization:</strong>
+          <a href="/organization/<%= project.organization_id %>"><%= project.organization_name %></a>
+        </p>
       </div>
     <% }) %>
   <% } else { %>
-    <p>No projects found yet.</p>
+    <p>No upcoming projects found.</p>
   <% } %>
 </main>
 

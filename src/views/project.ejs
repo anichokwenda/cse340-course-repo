@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+
+<main class="container">
+  <h1><%= project.title %></h1>
+
+  <div style="border: 1px solid #ddd; padding: 1.5rem; border-radius: 8px;">
+    <p><strong>Description:</strong> <%= project.description %></p>
+    <p><strong>Date:</strong> <%= new Date(project.project_date).toLocaleDateString() %></p>
+    <p><strong>Location:</strong> <%= project.location %></p>
+    <p><strong>Organization:</strong>
+      <a href="/organization/<%= project.organization_id %>"><%= project.organization_name %></a>
+    </p>
+  </div>
+
+  <p style="margin-top: 1rem;"><a href="/projects">← Back to Upcoming Projects</a></p>
+</main>
+
+<%- include('partials/footer') %>
