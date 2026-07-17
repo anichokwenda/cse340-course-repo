@@ -1,19 +1,36 @@
 <%- include('partials/header') %>
 
-<main>
-    <h1><%= title %></h1>
-    <p>Browse projects by category</p>
+<main class="list-page">
+    <% if (typeof category!== 'undefined' && category) { %>
+        <!-- CATEGORY DETAIL PAGE -->
+        <a href="/categories">← Back to All Categories</a>
+        <h1><%= category.name %></h1>
 
-    <% if (categories && categories.length > 0) { %>
-        <ul class="category-list">
-            <% categories.forEach(category => { %>
-                <li>
-                    <strong>[<%= category.category_id %>]</strong> <%= category.name %>
-                </li>
-            <% }) %>
-        </ul>
+        <% if (projects.length > 0) { %>
+            <div class="card-container">
+                <% projects.forEach(p => { %>
+                    <div class="card">
+                        <h3><a href="/project/<%= p.project_id %>"><%= p.title %></a></h3>
+                        <p class="meta">Hosted by: <a href="/organization/<%= p.organization_id %>"><%= p.organization_name %></a></p>
+                        <p class="meta">Date: <%= new Date(p.project_date).toLocaleDateString() %></p>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p>No upcoming projects in this category.</p>
+        <% } %>
+
     <% } else { %>
-        <p>No categories found.</p>
+        <!-- CATEGORIES LIST PAGE WITH CARDS -->
+        <h1><%= title %></h1>
+        <div class="card-container">
+            <% categories.forEach(category => { %>
+                <div class="card">
+                    <h3><a href="/category/<%= category.category_id %>"><%= category.name %></a></h3>
+                    <p>Click to see upcoming projects in this category.</p>
+                </div>
+            <% }) %>
+        </div>
     <% } %>
 </main>
 
