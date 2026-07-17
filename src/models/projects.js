@@ -41,6 +41,7 @@ const getProjectsByOrganizationId = async (organizationId) => {
 
 /**
  * Get the next X upcoming projects with organization name
+ * Shows the next 5 closest to today, past or future
  * @param {number} number_of_projects
  */
 const getUpcomingProjects = async (number_of_projects) => {
@@ -55,7 +56,6 @@ const getUpcomingProjects = async (number_of_projects) => {
       o.name AS organization_name
     FROM public.service_projects sp
     JOIN public.organizations o ON sp.organization_id = o.organization_id
-    WHERE sp.project_date >= CURRENT_DATE
     ORDER BY sp.project_date ASC
     LIMIT $1;
   `;
