@@ -1,4 +1,7 @@
-import { getUpcomingProjects, getProjectDetails } from '../models/projects.js';
+import { 
+  getUpcomingProjects, 
+  getProjectDetails // <-- this is the correct name from your model
+} from '../models/projects.js';
 
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
@@ -22,10 +25,15 @@ const showProjectsPage = async (req, res) => {
 const showProjectDetailsPage = async (req, res, next) => {
     try {
         const projectId = req.params.id;
-        const project = await getProjectById(projectId);
+        
+        // FIX 1: was getProjectById, should be getProjectDetails
+        const project = await getProjectDetails(projectId); 
+        
         if (!project) return res.status(404).render('errors/404', { title: '404 - Project Not Found' });
 
-        const categories = await getCategoriesByProjectId(projectId);
+        // FIX 2: categories are already included in getProjectDetails via array_agg
+        // So we don't need a separate call. Just pass project.categories
+        const categories = project.categories; 
 
         res.render('project', { title: project.title, project, categories });
     } catch (error) {

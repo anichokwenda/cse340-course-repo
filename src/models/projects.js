@@ -1,19 +1,22 @@
 import { db } from './db.js'
 
 /**
- * Get all projects - kept for reference
+ * Get all projects - for /projects list page
  */
 const getAllProjects = async () => {
   const query = `
     SELECT
-      project_id,
-      organization_id,
-      title,
-      description,
-      location,
-      project_date
-    FROM public.service_projects
-    ORDER BY project_date DESC;
+      sp.project_id,
+      sp.title,
+      sp.description,
+      sp.location,
+      sp.project_date,
+      o.organization_id,
+      o.name AS organization_name,
+      o.logo_filename
+    FROM public.service_projects sp
+    JOIN public.organizations o ON sp.organization_id = o.organization_id
+    ORDER BY sp.project_date ASC;
   `;
   const result = await db.query(query);
   return result.rows;
@@ -25,15 +28,17 @@ const getAllProjects = async () => {
 const getProjectsByOrganizationId = async (organizationId) => {
   const query = `
     SELECT
-      project_id,
-      organization_id,
-      title,
-      description,
-      location,
-      project_date
-    FROM public.service_projects
-    WHERE organization_id = $1
-    ORDER BY project_date;
+      sp.project_id,
+      sp.title,
+      sp.description,
+      sp.location,
+      sp.project_date,
+      o.name AS organization_name,
+      o.logo_filename
+    FROM public.service_projects sp
+    JOIN public.organizations o ON sp.organization_id = o.organization_id
+    WHERE sp.organization_id = $1
+    ORDER BY sp.project_date;
   `;
   const result = await db.query(query, [organizationId]);
   return result.rows;
@@ -41,7 +46,6 @@ const getProjectsByOrganizationId = async (organizationId) => {
 
 /**
  * Get the next X upcoming projects with organization name
- * Shows the next 5 closest to today, past or future
  * @param {number} number_of_projects
  */
 const getUpcomingProjects = async (number_of_projects) => {
@@ -49,11 +53,10 @@ const getUpcomingProjects = async (number_of_projects) => {
     SELECT
       sp.project_id,
       sp.title,
-      sp.description,
       sp.project_date,
       sp.location,
-      sp.organization_id,
-      o.name AS organization_name
+      o.name AS organization_name,
+      o.logo_filename
     FROM public.service_projects sp
     JOIN public.organizations o ON sp.organization_id = o.organization_id
     ORDER BY sp.project_date ASC
@@ -64,7 +67,8 @@ const getUpcomingProjects = async (number_of_projects) => {
 };
 
 /**
- * Get details for one project by ID with organization name
+ * Get details for one project by ID with organization name + categories
+ * This fixes the 500 error
  * @param {number} id
  */
 const getProjectDetails = async (id) => {
@@ -75,14 +79,21 @@ const getProjectDetails = async (id) => {
       sp.description,
       sp.project_date,
       sp.location,
-      sp.organization_id,
-      o.name AS organization_name
+      o.organization_id,
+      o.name AS organization_name,
+      o.description AS org_description,
+      o.contact_email,
+      o.logo_filename,
+      COALESCE(array_agg(c.name) FILTER (WHERE c.name IS NOT NULL), '{}') AS categories
     FROM public.service_projects sp
     JOIN public.organizations o ON sp.organization_id = o.organization_id
-    WHERE sp.project_id = $1;
+    LEFT JOIN public.project_categories pc ON sp.project_id = pc.project_id
+    LEFT JOIN public.categories c ON pc.category_id = c.category_id
+    WHERE sp.project_id = $1
+    GROUP BY sp.project_id, o.organization_id;
   `;
   const result = await db.query(query, [id]);
-  return result.rows[0];
+  return result.rows[0]; // will be undefined if not found
 };
 
 export { getAllProjects, getProjectsByOrganizationId, getUpcomingProjects, getProjectDetails };
