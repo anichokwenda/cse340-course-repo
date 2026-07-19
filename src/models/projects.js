@@ -1,7 +1,7 @@
 import { db } from './db.js'
 
 /**
- * Get all projects - for /projects list page
+  * Get all projects - for /projects list page
  */
 const getAllProjects = async () => {
   const query = `
@@ -10,6 +10,7 @@ const getAllProjects = async () => {
       sp.title,
       sp.description,
       sp.location,
+      TO_CHAR(sp.project_date, 'FMMonth DD, YYYY') AS formatted_date, -- FIX
       sp.project_date,
       o.organization_id,
       o.name AS organization_name,
@@ -23,7 +24,7 @@ const getAllProjects = async () => {
 };
 
 /**
- * Get projects for one organization
+  * Get projects for one organization - THIS FIXES YOUR SCREENSHOT
  */
 const getProjectsByOrganizationId = async (organizationId) => {
   const query = `
@@ -32,6 +33,7 @@ const getProjectsByOrganizationId = async (organizationId) => {
       sp.title,
       sp.description,
       sp.location,
+      TO_CHAR(sp.project_date, 'FMMonth DD, YYYY') AS formatted_date, -- FIX
       sp.project_date,
       o.name AS organization_name,
       o.logo_filename
@@ -45,14 +47,15 @@ const getProjectsByOrganizationId = async (organizationId) => {
 };
 
 /**
- * Get the next X upcoming projects with organization name
- * @param {number} number_of_projects
+  * Get the next X upcoming projects with organization name
+  * @param {number} number_of_projects
  */
 const getUpcomingProjects = async (number_of_projects) => {
   const query = `
     SELECT
       sp.project_id,
       sp.title,
+      TO_CHAR(sp.project_date, 'FMMonth DD, YYYY') AS formatted_date, -- FIX
       sp.project_date,
       sp.location,
       o.name AS organization_name,
@@ -67,9 +70,8 @@ const getUpcomingProjects = async (number_of_projects) => {
 };
 
 /**
- * Get details for one project by ID with organization name + categories
- * This fixes the 500 error
- * @param {number} id
+  * Get details for one project by ID with organization name + categories
+  * @param {number} id
  */
 const getProjectDetails = async (id) => {
   const query = `
@@ -77,6 +79,7 @@ const getProjectDetails = async (id) => {
       sp.project_id,
       sp.title,
       sp.description,
+      TO_CHAR(sp.project_date, 'FMMonth DD, YYYY') AS formatted_date, -- FIX
       sp.project_date,
       sp.location,
       o.organization_id,
@@ -93,7 +96,7 @@ const getProjectDetails = async (id) => {
     GROUP BY sp.project_id, o.organization_id;
   `;
   const result = await db.query(query, [id]);
-  return result.rows[0]; // will be undefined if not found
+  return result.rows[0];
 };
 
 export { getAllProjects, getProjectsByOrganizationId, getUpcomingProjects, getProjectDetails };

@@ -15,7 +15,7 @@
                 <li>
                     <a href="/project/<%= project.project_id %>">
                         <%= project.title %>
-                    </a> - <%= project.location %> | <%= new Date(project.date).toLocaleDateString() %>
+                    </a> - <%= project.location %> | <%= project.formatted_date %>
                 </li>
             <% }) %>
         </ul>
